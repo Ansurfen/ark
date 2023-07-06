@@ -1,0 +1,18 @@
+{
+    "1.20": [
+        {
+            "check": {
+                "os": "windows",
+                "arch": "i386"
+            },
+            "url": "https://golang.google.cn/dl/go1.20.5.windows-386.zip"
+        },
+        {
+            "check": {
+                "os": "windows",
+                "arch": "amd64"
+            },
+            "url": "https://golang.google.cn/dl/go1.20.5.windows-amd64.zip"
+        }
+    ]
+}

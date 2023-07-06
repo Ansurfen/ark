@@ -19,3 +19,9 @@
 
 # Go workspace file
 go.work
+
+container.json
+images.json
+
+repo
+include
