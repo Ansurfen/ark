@@ -5,17 +5,12 @@
 local image = {}
 
 function image:new()
-    local imagePath = path.join(debug.getinfo(1, "S").source, "../../images.json")
-    if is_exist(imagePath) then
-        self.file = jsonfile:open(imagePath)
-    else
-        self.file = jsonfile:create(imagePath)
-    end
+    self.file = json.create(pathf("#1", "../../images.json"))
     return self
 end
 
 function image:save()
-    image.file:write(true)
+    image.file:save(true)
 end
 
 function image:free(k)
@@ -28,7 +23,7 @@ function image:safe_store(id, name, ver, src)
             software = name,
             version = ver,
             source = src,
-            createAt = strconv.Itoa(time.now():Unix()),
+            createAt = strconv.Itoa(time.Now():Unix()),
         }
     end
 end

@@ -5,12 +5,7 @@
 local container = {}
 
 function container:new()
-    local conPath = path.join(debug.getinfo(1, "S").source, "../../container.json")
-    if is_exist(conPath) then
-        self.file = jsonfile:open(conPath)
-    else
-        self.file = jsonfile:create(conPath)
-    end
+    self.file = json.create(pathf("#1", "../../container.json"))
     return self
 end
 
@@ -51,7 +46,7 @@ function container:set()
 end
 
 function container:save()
-    container.file:write(true)
+    container.file:save(true)
 end
 
 return container

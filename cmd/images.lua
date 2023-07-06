@@ -14,7 +14,7 @@ return {
         for key, value in pairs(image:list()) do
             local ts, err = strconv.Atoi(value["createAt"])
             yassert(err)
-            table.insert(rows, { value["software"], value["version"], key, time.unix(ts, 0):String() })
+            table.insert(rows, { value["software"], value["version"], key, time.Unix(ts, 0):String() })
         end
         printf({ "Image", "Version", "ID", "Created" }, rows)
     end

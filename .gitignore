@@ -25,3 +25,5 @@ images.json
 
 repo
 include
+*.tar.gz
+*.zip
