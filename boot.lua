@@ -23,6 +23,7 @@ return {
         })
         uncompress(file, pathf(env.yock_path, "yock_modules"))
         cd(pathf(env.yock_modules, "ark"))
-        sh("yock mount ark ctl.lua")
+        sh(string.format([[yock mount ark ctl.lua
+chmod +x %s]], pathf("@/mnt/ark.sh")))
     end
 }
