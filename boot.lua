@@ -6,14 +6,17 @@ return {
     name = "ark",
     load = function(opt)
         local target = "ark"
+        local suffix
         if env.platform.OS == "windows" then
             target = target .. ".zip"
+            suffix = ".zip"
         else
             target = target .. ".tar.gz"
+            suffix = ".tar.gz"
         end
-        local file = multi_fetch({
-            tag = target,
-            ver = opt.ver or defaultVersion
+        local file = multi_fetch(suffix, {
+            Target = target,
+            Version = opt.ver or defaultVersion
         }, {
             github = "https://github.com/ansurfen/ark/releases/download/{{.Version}}/{{.Target}}",
             gitee = "https://gitee.com/ansurfen/ark/releases/download/{{.Version}}/{{.Target}}"
