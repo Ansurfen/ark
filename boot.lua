@@ -21,7 +21,7 @@ return {
             github = "https://github.com/ansurfen/ark/releases/download/{{.Version}}/{{.Target}}",
             gitee = "https://gitee.com/ansurfen/ark/releases/download/{{.Version}}/{{.Target}}"
         })
-        uncompress(pathf(env.yock_tmp, file), pathf(env.yock_path, "yock_modules"))
+        uncompress(file, pathf(env.yock_path, "yock_modules"))
         cd(pathf(env.yock_modules, "ark"))
         sh("yock mount ark ctl.lua")
     end
