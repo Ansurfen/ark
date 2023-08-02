@@ -39,9 +39,7 @@ return {
         ["8.1.0"] = {
             windows = {
                 {
-                    check = {
-                        suffix = "zip"
-                    },
+                    check = {   suffix = "zip"  },
                     url = "https://cdn.mysql.com//Downloads/MySQL-8.1/mysql-8.1.0-winx64.zip"
                 }
             }

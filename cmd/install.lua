@@ -1,6 +1,15 @@
 local install = function(opt)
     local choice = import(pathf("#1", "../..", "util/choice"))
     local res, repo = choice(opt)
+
+    if type(repo.exist) == "function" then
+        local exist = repo.exist(opt)
+        if type(exist) == "boolean" and exist then
+            fmt.Printf("%s already exist", opt.software)
+            return
+        end
+    end
+
     for i, box in ipairs(res) do
         for key, value in pairs(box.value["check"]) do
             local path = pathf("#1", "../..", "plugin", key .. ".lua")
@@ -37,22 +46,32 @@ local install = function(opt)
         res = tmp
         box = res[time.Now():Unix() % #res + 1]
     else
-        yassert("not matched result")
+        if repo["resolved"].bad ~= nil then
+            repo["resolved"]["bad"][opt.os or env.platform.OS](opt)
+            return
+        end
     end
 
     local file = fetch.file(box.url, filepath.Ext(box.url))
     local bin_path = pathf(env.yock_bin, opt.software)
-    local root, err = uncompress(file, bin_path)
-    yassert(err)
-    if type(repo.install) == "function" then
-        repo.install({
-            path = pathf(bin_path, root),
-            meta = opt
-        })
+    if not find(bin_path) then
+        local root, err = uncompress(file, bin_path)
+        yassert(err)
+        if type(repo.install) == "function" then
+            repo.install({
+                path = pathf(bin_path, root),
+                meta = opt
+            })
+        end
+        local target = pathf(bin_path, root)
+        print(target)
+        local jf = json.create(pathf(env.yock_path, "ark.json"), "{}")
+        jf:rawset(strf("%s@%s", opt.software, opt.ver), target)
+        jf:save(true)
+    else
+        local jf = json.create(pathf(env.yock_path, "ark.json"), "{}")
+        print(jf:rawget(strf("%s@%s", opt.software, opt.ver)))
     end
-    local jf = json.create(pathf(env.yock_path, "ark.json"), "{}")
-    jf:rawset(strf("%s@%s", opt.software, opt.ver), pathf(env.yock_bin, root))
-    jf:save(true)
 end
 
 return {
