@@ -41,11 +41,12 @@ local install = function(opt)
     end
 
     local file = fetch.file(box.url, filepath.Ext(box.url))
-    local root, err = uncompress(file, env.yock_bin)
+    local bin_path = pathf(env.yock_bin, opt.software)
+    local root, err = uncompress(file, bin_path)
     yassert(err)
     if type(repo.install) == "function" then
         repo.install({
-            path = pathf(env.yock_bin, root),
+            path = pathf(bin_path, root),
             meta = opt
         })
     end

@@ -5,13 +5,14 @@
 ---@diagnostic disable: undefined-global
 
 return {
-    version = "0.0.1",
+    version = "0.0.2",
     name = "ark",
     author = "The ark authors",
     desc = "",
     url = "",
     license = "MIT",
     load = function(opt)
+        sh(string.format([[yock mount ark %s]], pathf("#1", "..", "ctl.lua")))
     end,
     unload = function(opt)
     end
