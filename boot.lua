@@ -1,29 +1,18 @@
+-- Copyright The ark authors. All rights reserved.
+-- Use of this source code is governed by a MIT-style
+-- license that can be found in the LICENSE file.
+
 ---@diagnostic disable: undefined-global
-local defaultVersion = "0.0.2"
 
 return {
-    version = defaultVersion,
+    version = "0.0.1",
     name = "ark",
+    author = "The ark authors",
+    desc = "",
+    url = "",
+    license = "MIT",
     load = function(opt)
-        local target = "ark"
-        local suffix
-        if env.platform.OS == "windows" then
-            target = target .. ".zip"
-            suffix = ".zip"
-        else
-            target = target .. ".tar.gz"
-            suffix = ".tar.gz"
-        end
-        local file = multi_fetch(suffix, {
-            Target = target,
-            Version = opt.ver or defaultVersion
-        }, {
-            github = "https://github.com/ansurfen/ark/releases/download/{{.Version}}/{{.Target}}",
-            gitee = "https://gitee.com/ansurfen/ark/releases/download/{{.Version}}/{{.Target}}"
-        })
-        uncompress(file, pathf(env.yock_path, "yock_modules"))
-        cd(pathf(env.yock_modules, "ark"))
-        sh(string.format([[yock mount ark ctl.lua
-chmod +x %s]], pathf("@/mnt/ark.sh")))
+    end,
+    unload = function(opt)
     end
 }
