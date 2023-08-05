@@ -1,112 +1,55 @@
-local install = function(opt)
-    local choice = import(pathf("#1", "../..", "util/choice"))
-    local res, repo = choice(opt)
-
-    if type(repo.exist) == "function" then
-        local exist = repo.exist(opt)
-        if type(exist) == "boolean" and exist then
-            fmt.Printf("%s already exist", opt.software)
-            return
-        end
-    end
-
-    for i, box in ipairs(res) do
-        for key, value in pairs(box.value["check"]) do
-            local path = pathf("#1", "../..", "plugin", key .. ".lua")
-            if find(path) then
-                local plugin = import(pathf("#1", "../../plugin", key .. ".lua"))
-                local ok = plugin(value)
-                if not ok and opt.spec[key] == value then
-                    ok = true
-                end
-                if not ok then
-                    table.remove(res, i)
-                end
-            end
-        end
-    end
-
-    local box
-
-    if #res == 1 then
-        box = res[1].value
-    elseif #res > 1 then
-        local tmp = {}
-        local base = 0
-        for _, v in ipairs(res) do
-            if v.weight > base then
-                base = v.weight
-            end
-        end
-        for _, v in ipairs(res) do
-            if v.weight == base then
-                table.insert(tmp, v.value)
-            end
-        end
-        res = tmp
-        box = res[time.Now():Unix() % #res + 1]
-    else
-        if repo["resolved"].bad ~= nil then
-            repo["resolved"]["bad"][opt.os or env.platform.OS](opt)
-            return
-        end
-    end
-
-    local file = fetch.file(box.url, filepath.Ext(box.url))
-    local bin_path = pathf(env.yock_bin, opt.software)
-    if not find(bin_path) then
-        local root, err = uncompress(file, bin_path)
-        yassert(err)
-        if type(repo.install) == "function" then
-            repo.install({
-                path = pathf(bin_path, root),
-                meta = opt
-            })
-        end
-        local target = pathf(bin_path, root)
-        print(target)
-        local jf = json.create(pathf(env.yock_path, "ark.json"), "{}")
-        jf:rawset(strf("%s@%s", opt.software, opt.ver), target)
-        jf:save(true)
-    else
-        local jf = json.create(pathf(env.yock_path, "ark.json"), "{}")
-        print(jf:rawget(strf("%s@%s", opt.software, opt.ver)))
-    end
-end
-
 return {
-    standard = function(meta, spec)
-        if strings.Contains(meta, "@") then
-            local software, version, ok = strings.Cut(meta, "@")
-            if ok then
-                install({
-                    software = software,
-                    ver = version,
-                    spec = spec,
-                    cfg = {}
-                })
+    desc = { use = "install", short = "install software to be specified" },
+    run = function(cmd, args)
+        local install = import("../util/install")
+
+        local installParameter = env.params["/ark/install"]
+
+        local rule = installParameter["r"]:Var()
+        local spec = installParameter["s"]:Var()
+
+        if type(spec) == "table" then
+            local tmp = {}
+            for _, s in ipairs(spec) do
+                local k, v, ok = strings.Cut(s, "=")
+                if ok then
+                    tmp[k] = v
+                end
             end
+            spec = tmp
+        end
+
+        if #rule == 0 then
+            if #args == 0 then
+                yassert("")
+            else
+                if spec.suffix == nil then
+                    local zip = env.platform:Zip()
+                    spec.suffix = string.sub(zip, 2, #zip)
+                end
+                if spec.arch == nil then
+                    spec.arch = env.platform.Arch
+                end
+                install.standard(args[1], spec)
+            end
+        else
+            install.config(spec, rule)
         end
     end,
-    config = function(spec, cmd)
-        local cmdparse = import("opencmd/util/cmdparse")
-        local c = cmdparse(cmd, {
-            ["-p"] = flag_type.str,
-            ["--name"] = flag_type.str,
-            ["-e"] = flag_type.arr,
-            ["-d"] = flag_type.str
-        })
-        if c["-p"] ~= nil and strings.Contains(c["-p"], ":") then
-            _, c["-p"], _ = strings.Cut(c["-p"], ":")
-        end
-        local software, version, ok = strings.Cut(c["-d"], ":")
-        if ok then
-            install({
-                software = software,
-                ver = version,
-                spec = spec,
-                cfg = c
-            })
-        end
-    end
+    flags = {
+        {
+            type = flag_type.str,
+            default = "",
+            shorthand = "r",
+            name = "rule",
+            usage = ""
+        },
+        {
+            type = flag_type.arr,
+            default = {},
+            shorthand = "s",
+            name = "spec",
+            usage = ""
+        }
+    }
 }

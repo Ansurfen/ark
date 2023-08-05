@@ -24,5 +24,12 @@ return {
                 }
             }
         }
-    }
+    },
+    exist = function ()
+        local _, err = sh("conan")
+        if err ~= nil then
+            return false
+        end
+        return true
+    end
 }

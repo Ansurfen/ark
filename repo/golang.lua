@@ -1,4 +1,5 @@
 return {
+    version = "1.20",
     resolved = {
         ["1.20"] = {
             windows = {

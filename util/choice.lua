@@ -1,7 +1,5 @@
----@param opt table
-return function(opt)
+local choice = function(opt, repo)
     local got = opt["spec"]
-    local repo = import(pathf("#1", "../..", "repo", opt["software"] .. ".lua"))
     local res = {}
     for _, v in ipairs(repo.resolved[opt.ver or repo.version][opt.os or env.platform.OS]) do
         local pass = true
@@ -21,4 +19,12 @@ return function(opt)
         end
     end
     return res, repo
+end
+
+---@param opt table
+return function(opt, repo)
+    if repo == nil then
+        return choice(opt, import(pathf("#1", "../..", "repo", opt["software"] .. ".lua")))
+    end
+    return choice(opt, repo)
 end

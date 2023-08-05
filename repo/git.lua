@@ -1,4 +1,5 @@
 return {
+    version = "2.41.0",
     resolved = {
         ["2.41.0"] = {
             windows = {
@@ -28,5 +29,12 @@ return {
 
             end
         }
-    }
+    },
+    exist = function()
+        local _, err = sh("git")
+        if err ~= nil then
+            return false
+        end
+        return true
+    end
 }
